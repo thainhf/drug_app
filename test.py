@@ -112,7 +112,7 @@ def load_lottieurl(url: str):
 
 #### import html ####
 import streamlit.components.v1 as stc 
-def st_webpage(page_html,width=1370,height=900):
+def st_webpage(page_html,width=1370,height=1550):
     page_file = codecs.open(page_html,'r')
     page =page_file.read()
     stc.html(page,width=width, height=height , scrolling = False)
@@ -132,8 +132,8 @@ if selected =="Home":
             
 
     # with st.expander("Power BI"):
-    t1,t2 = st.columns((0.15,1))
-    t1.image('images/qrcode_app.powerbi.com.png', width = 175)
+    # t1,t2 = st.columns((0.15,1))
+    # t1.image('images/qrcode_app.powerbi.com.png', width = 175)
     st_webpage('powerBI.html')
       
 #-------------------------------------------------------#
@@ -412,14 +412,9 @@ if selected =="Predict new SMILES molecule":
 
                 filey = open('pharmaceuticAI_all_compounds.smiles')
                 structures = [line[:-1] for line in filey]
-                #("Num Total Samples:", len(structures))
-                #filey.close()
-                # num_sampled = structures
-
-                # random.shuffle(structures)
+                
                 data = structures 
                 del structures
-                #("Num Sampled:", num_sampled)
 
                 def gen_structs(data):
 
@@ -451,6 +446,11 @@ if selected =="Predict new SMILES molecule":
                         network_inp.append([element_to_int[char] for char in sequence_in])
                         
                     n_patterns = len(network_inp)
+
+                    # reshape the input into a format compatible with CuDNNLSTM layers
+                    network_inp = np.reshape(network_inp, (n_patterns, sequence_length))
+
+                    return network_inp
 
                 network_input = gen_data(gen_structs(data))
 
@@ -594,8 +594,10 @@ if selected =="Predict new SMILES molecule":
                 #encoder.save('final_model.h5')
                 # model.load_weights("SMILES-best(2).hdf5")
                 
-                augmented = aug_list([original])[0]
-                st.write(augmented)
+                original = str(predict_nsmiles)
+                augmented = aug_list([original])
+                st.write(original) 
+                st.write(augmented) 
                             
         # except:
         #      st.error(f"Your SMILES does not meet the principles of the Lipinski Rules!! ❌")
